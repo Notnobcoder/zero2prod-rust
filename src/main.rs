@@ -1,21 +1,16 @@
-use  actix_web::{web, App, HttpRequest, HttpServer, Responder, HttpResponse};
-// chekc
 
-// healeth check handler
-async fn healt_check() -> impl Responder {
-    HttpResponse::Ok().finish()
-}
-async fn greet(req: HttpRequest) -> impl Responder {
-    let name = req.match_info().get("name").unwrap_or("world");
-    format!("Hello {}!",&name)
-}
+use actix_web::{HttpServer, App, web, Responder, HttpResponse};
 
+
+async fn health_check() -> impl Responder{
+    println!("hello world");
+    HttpResponse::Ok().body("hello world")
+}
 
 #[tokio::main]
-async fn  main() -> std::io::Result<()> {
-    println!("Server running at port 8000");
+async fn main() -> std::io::Result<()>{
     HttpServer::new(|| {
-        App::new().route("/", web::get().to(greet)).route("/{name}", web::get().to(greet)).route("/health_check", web::get().to(healt_check))
-    }).bind("127.0.0.1:8000")?.run().await
-    
+        App::new().route("/", web::get().to(health_check))
+    }).workers(4).bind("127.0.0.1:8000")?.run().await
+
 }
